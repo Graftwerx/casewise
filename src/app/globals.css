@@ -1,8 +1,70 @@
 @import "tailwindcss";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
 
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
+
+/* @keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes marquee {
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes flashing {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  20% {
+    opacity: 1;
+  }
+}
+
+.marquee {
+  animation: marquee var(--marquee-duration) linear infinite;
+}
+
+.fade-in {
+  animation: fade-in 0.5s linear forwards;
+}
+
+.flashing {
+  animation: flashing 1.4s infinite linear;
+}
+:root {
+  --marquee-duration: 10s;
+} */
+@theme {
+  --animate-marquee: marquee var(--marquee-duration) linear infinite;
+  --marquee-duration: 10s;
+  --animate-fade-in: fade-in 0.5s linear forwards;
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes marquee {
+    100% {
+      transform: translateY(-50%);
+    }
+  }
+}
 
 @theme inline {
   --color-background: var(--background);

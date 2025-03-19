@@ -139,7 +139,7 @@ export default function Home() {
       {/* value proposition */}
       <section className="bg-slate-100 py-24">
         <MaxWidthWrapper className="flex flex-col items-center gap-16 sm:gap-32 ">
-          <div className="flex flex-col lg:flex-row items-center gap-4 sm: gap-6">
+          <div className="flex flex-col lg:flex-row items-center gap-4 sm:gap-6">
             <h2
               className="order-1 mt-2 tracking-tight text-center text-balance
                           !leading-tight font-bold text-5xl md:text-6xl text-gray-900"
@@ -173,12 +173,12 @@ export default function Home() {
               </div>
               <div className="text-lg leading-8">
                 <p>
-                  "I work on a construction site and my phone takes a lot of
-                  rough treatment, but thanks to my new case{" "}
+                  &quot;I work on a construction site and my phone takes a lot
+                  of rough treatment, but thanks to my new case{" "}
                   <span className="p-0.5 bg-slate-800 text-white">
                     the phone still looks brand new
                   </span>
-                  , brilliant product. "
+                  , brilliant product. &quot;
                 </p>
               </div>
               <div className="flex gap-4 mt-2">
@@ -209,12 +209,13 @@ export default function Home() {
               </div>
               <div className="text-lg leading-8">
                 <p>
-                  "The case feels durable and I even got a compliment on the
-                  design. I have had the case for two and a half months now and{" "}
+                  &quot;The case feels durable and I even got a compliment on
+                  the design. I have had the case for two and a half months now
+                  and{" "}
                   <span className="p-0.5 bg-slate-800 text-white">
                     the image is still super clear
                   </span>
-                  , my old case started fading after a couple of weeks. "
+                  , my old case started fading after a couple of weeks. &quot;
                 </p>
               </div>
               <div className="flex gap-4 mt-2">
