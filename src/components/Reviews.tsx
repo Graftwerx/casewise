@@ -130,7 +130,7 @@ function ReviewGrid() {
                 "lg:hidden": reviewIndex >= column1.length,
               })
             }
-            msPerPixel={10}
+            msPerPixel={30}
           />
           <ReviewColumn
             reviews={[...column2, ...column3[1]]}
@@ -138,15 +138,17 @@ function ReviewGrid() {
             reviewClassName={(reviewIndex) =>
               reviewIndex >= column2.length ? "lg:hidden" : ""
             }
-            msPerPixel={15}
+            msPerPixel={20}
           />
           <ReviewColumn
             reviews={column3.flat()}
             className="hidden md:block"
-            msPerPixel={10}
+            msPerPixel={50}
           />
         </>
       ) : null}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-slate-100" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-100" />
     </div>
   );
 }
