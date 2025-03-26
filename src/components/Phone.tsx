@@ -24,16 +24,16 @@ const Phone = ({ imgSrc, className, dark = false, ...props }: PhoneProps) => {
         }
         alt="phone image"
         className="pointer-events-none z-50 select-none"
-        width={210}
-        height={210}
+        width={570}
+        height={500}
       />
       <div className="absolute -z-10 inset-0">
         <Image
           src={imgSrc}
           alt="phone overlay"
           className="object-cover"
-          width={210}
-          height={210}
+          width={570}
+          height={500}
         />
       </div>
     </div>
