@@ -25,6 +25,10 @@ import { ArrowRight, Check, ChevronsUpDown } from "lucide-react";
 import { BASE_PRICE } from "@/config/products";
 import { toast } from "sonner";
 import { useUploadThing } from "@/lib/uploadthing";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { SaveConfigArgs, saveConfig as _saveConfig } from "./actions";
+import { CaseMaterial } from "@prisma/client";
 
 interface DesignConfiguratorProps {
   configId: string;
@@ -37,6 +41,20 @@ const DesignConfigurator = ({
   imageUrl,
   imageDimensions,
 }: DesignConfiguratorProps) => {
+  const router = useRouter();
+  const { mutate: saveConfig } = useMutation({
+    mutationKey: ["save-config"],
+    mutationFn: async (args: SaveConfigArgs) => {
+      await Promise.all([saveConfiguration(), _saveConfig(args)]);
+    },
+    onError: () => {
+      toast("There was an error, please try again");
+    },
+    onSuccess: () => {
+      console.log("✅ Mutation successful, navigating to preview...");
+      router.push(`/configure/preview?id=${configId}`);
+    },
+  });
   const [options, setOptions] = useState<{
     color: (typeof COLORS)[number];
     model: (typeof MODELS.options)[number];
@@ -358,7 +376,19 @@ const DesignConfigurator = ({
                     100
                 )}
               </p>
-              <Button onClick={saveConfiguration} size="sm" className="w-full">
+              <Button
+                onClick={() =>
+                  saveConfig({
+                    configId,
+                    color: options.color.value,
+                    finish: options.finish.value,
+                    material: options.material.value as CaseMaterial,
+                    model: options.model.value,
+                  })
+                }
+                size="sm"
+                className="w-full"
+              >
                 Continue
                 <ArrowRight className="h-4 w-4 ml-1.5 inline" />
               </Button>
