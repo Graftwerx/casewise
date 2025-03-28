@@ -50,6 +50,7 @@
   --animate-marquee: marquee var(--marquee-duration) linear infinite;
   --marquee-duration: 10s;
   --animate-fade-in: fade-in 0.5s linear forwards;
+  ----animate-flashing: flashing 1.4s infinite linear;
   @keyframes fade-in {
     from {
       opacity: 0;
