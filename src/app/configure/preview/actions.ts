@@ -13,12 +13,28 @@ export const createCheckoutSession = async ({configId,}:{configId:string})=>{
    if(!configuration){
     throw new Error('No such configuration found')
 }
-    const {getUser} = getKindeServerSession()
-    const user = await getUser()
+const { getUser } = getKindeServerSession();
+const user = await getUser();
 
-    if(!user){
-        throw new Error('You need to be logged in')
-    }
+if (!user || !user.id) {
+  console.error("No user returned from Kinde:", user);
+  throw new Error("You must be logged in to checkout.");
+}
+
+    let dbUser = await db.user.findUnique({
+        where: { id: user.id },
+      });
+      
+      if (!dbUser) {
+        dbUser = await db.user.create({
+          data: {
+            id: user.id,
+            email: user.email || "", // if needed
+            // any other required fields here
+          },
+        });
+      }
+      
 
     const {finish,material} = configuration
 

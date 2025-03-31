@@ -10,7 +10,7 @@ import { ArrowRight, Check } from "lucide-react";
 
 import React, { useEffect, useState } from "react";
 import Confetti from "react-dom-confetti";
-import { createCheckoutSession } from "./actions";
+// import { createCheckoutSession } from "./actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -32,14 +32,38 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
 
   const router = useRouter();
 
+  const createCheckoutSession = async ({ configId }: { configId: string }) => {
+    const response = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ configId }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error("Checkout session failed:", error);
+      throw new Error(error.error || "Failed to create checkout session");
+    }
+
+    const data = await response.json();
+    console.log("Checkout session created:", data);
+    return data; // { url: string }
+  };
+
   const { mutate: createPaymentSession } = useMutation({
     mutationKey: ["get-checkout-session"],
     mutationFn: createCheckoutSession,
     onSuccess: ({ url }) => {
-      if (url) router.push(url);
-      else throw new Error("Unable to retrieve payment URL");
+      if (url) {
+        router.push(url);
+      } else {
+        throw new Error("No payment URL returned");
+      }
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Checkout mutation error:", error);
       toast("Error during processing, please try again");
     },
   });
