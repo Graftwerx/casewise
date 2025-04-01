@@ -27,8 +27,13 @@ import { toast } from "sonner";
 import { useUploadThing } from "@/lib/uploadthing";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import { SaveConfigArgs, saveConfig as _saveConfig } from "./actions";
-import { CaseMaterial } from "@prisma/client";
+import {
+  CaseMaterial,
+  PhoneModel,
+  SaveConfigArgs,
+  saveConfig as _saveConfig,
+} from "./actions";
+// import { CaseMaterial } from "@prisma/client";
 
 interface DesignConfiguratorProps {
   configId: string;
@@ -383,7 +388,7 @@ const DesignConfigurator = ({
                     color: options.color.value,
                     finish: options.finish.value,
                     material: options.material.value as CaseMaterial,
-                    model: options.model.value,
+                    model: options.model.value as PhoneModel,
                   })
                 }
                 size="sm"
