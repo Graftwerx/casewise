@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     );
   } catch (err) {
   
-    return new Response('Webhook error', { status: 400 });
+    return new Response(`Webhook error ${err}`, { status: 400 });
   }
 
   if (event.type === "checkout.session.completed") {
@@ -48,11 +48,11 @@ export async function POST(req: Request) {
           shippingAddress: {
             create: {
               name: session.customer_details!.name!,
-              city: shippingAddress?.city || "",
-              country: shippingAddress?.country || "",
-              postalCode: shippingAddress?.postal_code || "",
-              street: shippingAddress?.line1 || "",
-              state: shippingAddress?.state || "",
+              city: shippingAddress!.city!,
+              country: shippingAddress!.country!,
+              postalCode: shippingAddress!.postal_code!,
+              street: shippingAddress!.line1!,
+              state: shippingAddress!.state,
             },
           },
           billingAddress: {
@@ -69,11 +69,12 @@ export async function POST(req: Request) {
       });
 
       console.log(`✅ Order ${metadata.orderId} marked as paid`);
+      return NextResponse.json({result: event,ok: true})
     } catch (err) {
       console.error("Error updating order:", err);
-      return new Response("Error updating order", { status: 500 });
+      return NextResponse.json({message:'Something went wrong',ok:false},{status: 500})
     }
   }
 
-  return NextResponse.json({ received: true });
+//   return NextResponse.json({ received: true });
 }
