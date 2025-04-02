@@ -2,13 +2,24 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { getPaymentStatus } from "./actions";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import PhonePreview from "@/components/PhonePreview";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 const ThankYou = () => {
+  const { user } = useKindeBrowserClient();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const orderId = searchParams.get("orderId") || "";
+
+  // 🔁 Redirect to login if user is missing (Stripe returned but no session)
+  React.useEffect(() => {
+    if (!user && orderId) {
+      const encodedOrderId = encodeURIComponent(orderId);
+      router.push(`/kinde-login?returnTo=/thank-you?orderId=${encodedOrderId}`);
+    }
+  }, [user, orderId, router]);
 
   const { data } = useQuery({
     queryKey: ["get-payment-status"],
