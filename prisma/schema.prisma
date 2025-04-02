@@ -75,10 +75,10 @@ model Order {
   isPaid          Boolean       @default(false)
   status          OrderStatus   @default(awaiting_shipment)
 
-  shippingAddress   ShippingAddress[]
   shippingAddressId String?
 
-  billingAddress   BillingAddress[]
+  shippingAddress  ShippingAddress? @relation(fields: [shippingAddressId], references: [id])
+  billingAddress   BillingAddress?  @relation(fields: [billingAddressId], references: [id])
   billingAddressId String?
 
   createdAt DateTime @default(now())
