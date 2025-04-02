@@ -6,6 +6,8 @@ import { cn, formatPrice } from "@/lib/utils";
 import NextImage from "next/image";
 import React, { useRef, useState } from "react";
 import { Rnd } from "react-rnd";
+import { CaseMaterial, PhoneModel } from "@/types/case";
+
 import { RadioGroup, Radio } from "@headlessui/react";
 import {
   COLORS,
@@ -27,12 +29,7 @@ import { toast } from "sonner";
 import { useUploadThing } from "@/lib/uploadthing";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import {
-  CaseMaterial,
-  PhoneModel,
-  SaveConfigArgs,
-  saveConfig as _saveConfig,
-} from "./actions";
+import { SaveConfigArgs, saveConfig as _saveConfig } from "./actions";
 // import { CaseMaterial } from "@prisma/client";
 
 interface DesignConfiguratorProps {
