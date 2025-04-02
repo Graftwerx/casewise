@@ -9,6 +9,7 @@ const Navbar = async () => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
   const isAdmin = user?.email === process.env.ADMIN_EMAIL;
+
   return (
     <nav
       className="sticky z-[100] h-14 inset-x-0 top-0 w-full border-b border-gray-200 bg-white/75 
@@ -22,36 +23,38 @@ const Navbar = async () => {
           <div className="h-full flex items-center space-x-4">
             {user ? (
               <>
-                <Link
+                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                <a
                   href="/api/auth/logout"
                   className={buttonVariants({ size: "sm", variant: "ghost" })}
                 >
                   Sign out
-                </Link>
+                </a>
                 {isAdmin ? (
-                  <Link
-                    href="/api/auth/logout"
+                  <a
+                    href="/admin/dashboard"
                     className={buttonVariants({ size: "sm", variant: "ghost" })}
                   >
                     Dashboard
-                  </Link>
+                  </a>
                 ) : null}
               </>
             ) : (
               <>
-                <Link
+                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                <a
                   href="/api/auth/register"
                   className={buttonVariants({ size: "sm", variant: "ghost" })}
                 >
                   Sign up
-                </Link>
-
-                <Link
+                </a>
+                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                <a
                   href="/api/auth/login"
                   className={buttonVariants({ size: "sm", variant: "ghost" })}
                 >
                   Sign in
-                </Link>
+                </a>
                 <div className="h-8 w-px bg-zinc-200 hidden sm:block" />
                 <Link
                   href="/configure/upload"
