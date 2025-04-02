@@ -23,6 +23,7 @@ const Navbar = async () => {
               <>
                 <Link
                   href="/api/auth/logout"
+                  prefetch={false}
                   className={buttonVariants({
                     size: "sm",
                     variant: "ghost",
@@ -33,6 +34,7 @@ const Navbar = async () => {
                 {isAdmin ? (
                   <Link
                     href="/dashboard"
+                    prefetch={false}
                     className={buttonVariants({
                       size: "sm",
                       variant: "ghost",
@@ -56,6 +58,7 @@ const Navbar = async () => {
               <>
                 <Link
                   href="/api/auth/register"
+                  prefetch={false}
                   className={buttonVariants({
                     size: "sm",
                     variant: "ghost",
@@ -66,12 +69,13 @@ const Navbar = async () => {
 
                 <Link
                   href="/api/auth/login"
+                  prefetch={false}
                   className={buttonVariants({
                     size: "sm",
                     variant: "ghost",
                   })}
                 >
-                  Login
+                  Sign in
                 </Link>
 
                 <div className="h-8 w-px bg-zinc-200 hidden sm:block" />
