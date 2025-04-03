@@ -4,9 +4,18 @@ import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+
+
 export async function POST(req: Request) {
   try {
-    const body = await req.text()
+    const buffer = await req.arrayBuffer()
+    const rawBody = Buffer.from(buffer)
+
     const signature = (await headers()).get('stripe-signature')
 
     if (!signature) {
@@ -14,7 +23,7 @@ export async function POST(req: Request) {
     }
 
     const event = stripe.webhooks.constructEvent(
-      body,
+      rawBody,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     )
