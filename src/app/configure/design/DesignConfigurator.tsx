@@ -47,7 +47,7 @@ const DesignConfigurator = ({
   const { mutate: saveConfig } = useMutation({
     mutationKey: ["save-config"],
     mutationFn: async (args: SaveConfigArgs) => {
-      await Promise.all([saveConfiguration(), _saveConfig(args)]);
+      await saveConfiguration(args);
     },
     onError: () => {
       toast("There was an error, please try again");
@@ -83,7 +83,7 @@ const DesignConfigurator = ({
 
   const { startUpload } = useUploadThing("imageUploader");
 
-  async function saveConfiguration() {
+  async function saveConfiguration(args: SaveConfigArgs) {
     try {
       const {
         left: caseLeft,
@@ -124,7 +124,19 @@ const DesignConfigurator = ({
       const blob = base64ToBlob(base64Data, "image/png");
       const file = new File([blob], "filename.png", { type: "image/png" });
 
-      await startUpload([file], { configId });
+      const uploaded = await startUpload([file], { configId });
+      if (!uploaded || !uploaded[0]?.url) {
+        toast("Upload failed. Please try again.");
+        return;
+      }
+
+      const croppedImageUrl = uploaded[0].url;
+
+      // ✅ Save config with uploaded image URL
+      await _saveConfig({
+        ...args,
+        croppedImageUrl,
+      });
     } catch (err) {
       toast("Something went wrong saving your design please try again");
     }

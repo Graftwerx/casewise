@@ -9,6 +9,7 @@ export type SaveConfigArgs = {
   material: CaseMaterial
   model: PhoneModel
   configId: string
+  croppedImageUrl?: string
 }
 
 export async function saveConfig({
