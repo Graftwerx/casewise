@@ -4,17 +4,13 @@ import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-
-
-
-
 export async function POST(req: Request) {
   try {
     const body = await req.text()
     const signature = (await headers()).get('stripe-signature')
 
     if (!signature) {
-      return new Response('Invalid signature', { status: 400 })
+      return new Response('Missing Stripe signature', { status: 400 })
     }
 
     const event = stripe.webhooks.constructEvent(
@@ -24,63 +20,68 @@ export async function POST(req: Request) {
     )
 
     if (event.type === 'checkout.session.completed') {
-      if (!event.data.object.customer_details?.email) {
-        throw new Error('Missing user email')
-      }
-
       const session = event.data.object as Stripe.Checkout.Session
 
-      const { userId, orderId } = session.metadata || {
-        userId: null,
-        orderId: null,
+      const email = session.customer_details?.email
+      const { userId, orderId } = session.metadata ?? {}
+
+      if (!email || !userId || !orderId) {
+        throw new Error('Missing essential metadata or email')
       }
 
-      if (!userId || !orderId) {
-        throw new Error('Invalid request metadata')
+      const billing = session.customer_details?.address
+      const shipping = session.shipping_details?.address
+      const customerName = session.customer_details?.name || 'Unknown'
+
+      if (!billing || !shipping) {
+        throw new Error('Missing address info from session')
       }
 
-      const billingAddress = session.customer_details!.address
-      const shippingAddress = session.shipping_details!.address
-
-      const updatedOrder = await db.order.update({
-        where: {
-          id: orderId,
-        },
+      // Create shipping address
+      const createdShipping = await db.shippingAddress.create({
         data: {
-          isPaid: true,
-          shippingAddress: {
-            create: {
-              name: session.customer_details!.name!,
-              city: shippingAddress!.city!,
-              country: shippingAddress!.country!,
-              postalCode: shippingAddress!.postal_code!,
-              street: shippingAddress!.line1!,
-              state: shippingAddress!.state,
-            },
-          },
-          billingAddress: {
-            create: {
-              name: session.customer_details!.name!,
-              city: billingAddress!.city!,
-              country: billingAddress!.country!,
-              postalCode: billingAddress!.postal_code!,
-              street: billingAddress!.line1!,
-              state: billingAddress!.state,
-            },
-          },
+          name: customerName,
+          city: shipping.city!,
+          country: shipping.country!,
+          postalCode: shipping.postal_code!,
+          street: shipping.line1!,
+          state: shipping.state ?? '',
         },
       })
 
+      // Create billing address
+      const createdBilling = await db.billingAddress.create({
+        data: {
+          name: customerName,
+          city: billing.city!,
+          country: billing.country!,
+          postalCode: billing.postal_code!,
+          street: billing.line1!,
+          state: billing.state ?? '',
+        },
+      })
 
+      // Update the order
+      await db.order.update({
+        where: { id: orderId },
+        data: {
+          isPaid: true,
+          billingAddressId: createdBilling.id,
+          shippingAddressId: createdShipping.id,
+        },
+      })
+
+      console.log(`✅ Order ${orderId} marked as paid`)
     }
 
     return NextResponse.json({ result: event, ok: true })
   } catch (err) {
-    console.error(err)
-
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+    console.error('❌ Webhook error:', errorMessage)
+  
     return NextResponse.json(
-      { message: 'Something went wrong', ok: false },
+      { message: 'Webhook failed', ok: false, error: errorMessage },
       { status: 500 }
     )
   }
-}
+}  
