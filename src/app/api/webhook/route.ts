@@ -20,40 +20,50 @@ export async function POST(req: Request) {
     )
 
     if (event.type === 'checkout.session.completed') {
-      const session = event.data.object as Stripe.Checkout.Session
+      console.log('📦 Stripe checkout.session.completed event received')
 
+      const session = event.data.object as Stripe.Checkout.Session
       const { userId, orderId } = session.metadata ?? {}
+
+      console.log('🧾 Metadata:', { userId, orderId })
       if (!userId || !orderId) throw new Error('Missing metadata')
 
-      const customerName = session.customer_details?.name || 'Unknown'
+      const name = session.customer_details?.name
       const billing = session.customer_details?.address
       const shipping = session.shipping_details?.address
 
-      if (!billing || !shipping) throw new Error('Missing billing/shipping info')
+      if (!name || !billing || !shipping) {
+        throw new Error('Missing customer name or address info')
+      }
 
+      console.log('📬 Creating shipping address...')
       const shippingRecord = await db.shippingAddress.create({
         data: {
-          name: customerName,
-          street: shipping.line1 || '',
-          city: shipping.city || '',
-          country: shipping.country || '',
-          postalCode: shipping.postal_code || '',
-          state: shipping.state || '',
+          name,
+          street: shipping.line1 ?? '',
+          city: shipping.city ?? '',
+          country: shipping.country ?? '',
+          postalCode: shipping.postal_code ?? '',
+          state: shipping.state ?? '',
         },
       })
+      console.log('✅ Shipping address created:', shippingRecord.id)
 
+      console.log('📬 Creating billing address...')
       const billingRecord = await db.billingAddress.create({
         data: {
-          name: customerName,
-          street: billing.line1 || '',
-          city: billing.city || '',
-          country: billing.country || '',
-          postalCode: billing.postal_code || '',
-          state: billing.state || '',
+          name,
+          street: billing.line1 ?? '',
+          city: billing.city ?? '',
+          country: billing.country ?? '',
+          postalCode: billing.postal_code ?? '',
+          state: billing.state ?? '',
         },
       })
+      console.log('✅ Billing address created:', billingRecord.id)
 
-      await db.order.update({
+      console.log('📝 Updating order...')
+      const updatedOrder = await db.order.update({
         where: { id: orderId },
         data: {
           isPaid: true,
@@ -61,8 +71,7 @@ export async function POST(req: Request) {
           shippingAddressId: shippingRecord.id,
         },
       })
-
-      console.log(`✅ Webhook success: Order ${orderId} marked as paid`)
+      console.log('✅ Order updated:', updatedOrder.id)
     }
 
     return NextResponse.json({ received: true })
