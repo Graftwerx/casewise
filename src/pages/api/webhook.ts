@@ -4,12 +4,16 @@ import { buffer } from 'micro'
 import Stripe from 'stripe'
 import { stripe } from '@/lib/stripe'
 import { db } from '@/db'
+import {Resend} from 'resend'
+import OrderReceivedEmail from '@/components/emails/OrderReceivedEmail'
 
 export const config = {
   api: {
     bodyParser: false,
   },
 }
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') {
@@ -72,7 +76,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     })
 
-    await db.order.update({
+    const updatedOrder = await db.order.update({
       where: { id: orderId },
       data: {
         isPaid: true,
@@ -80,6 +84,32 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         shippingAddressId: shippingRecord.id,
       },
     })
+    const customerEmail = session.customer_details?.email;
+
+    if (!customerEmail) {
+      console.error('❌ Missing customer email');
+      return res.status(400).end();
+    }
+    
+    await resend.emails.send({
+      from: 'CaseWise <graftwerx@gmail.com>',
+      to: [customerEmail],
+      subject: 'Thanks for your order',
+      react: OrderReceivedEmail({
+        orderId,
+        orderDate: updatedOrder.createdAt.toLocaleDateString(),
+        // @ts-expect-error shipping address exists
+        shippingAddress: {
+          name,
+          street: shipping.line1 ?? '',
+          city: shipping.city ?? '',
+          country: shipping.country ?? '',
+          postalCode: shipping.postal_code ?? '',
+          state: shipping.state ?? '',
+        },
+      }),
+    });
+    
 
     console.log('✅ Order updated successfully:', orderId)
   }
