@@ -95,7 +95,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
       </div>
       <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
       <div
-        className="mt-20 grid grid-cols-1 text-sm sm:grid-cols-12 sm:grid-rows-1
+        className="mt-20 flex flex-col items-center md:grid  text-sm sm:grid-cols-12 sm:grid-rows-1
                       sm:gap-x-6 md:gap-x-8 lg:gap-x-12"
       >
         <div className="relative overflow-hidden sm:col-span-4 md:col-span-3 md:row-span-2 md:row-end-2 ">
