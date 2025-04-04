@@ -20,6 +20,7 @@ import { formatPrice } from "@/lib/utils";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { notFound, redirect } from "next/navigation";
 import React from "react";
+import StatusDropdown from "./StatusDropdown";
 
 const Page = async () => {
   const { getUser } = getKindeServerSession();
@@ -114,24 +115,6 @@ const Page = async () => {
                 />
               </CardFooter>
             </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Last Week</CardDescription>
-                <CardTitle className="text-4xl">
-                  {formatPrice(lastWeekSum._sum.amount ?? 0)}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-sm text-muted-foreground">
-                  of {formatPrice(WEEKLY_GOAL)} goal
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Progress
-                  value={((lastWeekSum._sum.amount ?? 0) * 100) / WEEKLY_GOAL}
-                />
-              </CardFooter>
-            </Card>
           </div>
           <h1 className="text-4xl font-bold tracking-tight">Incoming orders</h1>
           <Table>
@@ -156,7 +139,9 @@ const Page = async () => {
                       {order.user.email}
                     </div>
                   </TableCell>
-                  <TableCell>status</TableCell>
+                  <TableCell className="hidden sm:table-cell">
+                    <StatusDropdown id={order.id} orderStatus={order.status} />
+                  </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {order.createdAt.toLocaleDateString()}
                   </TableCell>
