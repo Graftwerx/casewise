@@ -40,6 +40,6 @@ export function constructMetadata({
       images:[image]
     },
     icons,
-    metadataBase: new URL('https://casewise-pied.vercel.app')
+    metadataBase: new URL('https://casewise-pied.vercel.app/')
   }
 }
